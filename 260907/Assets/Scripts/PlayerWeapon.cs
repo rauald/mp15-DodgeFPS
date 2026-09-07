@@ -10,12 +10,29 @@ public class PlayerWeapon : MonoBehaviour
 
     [SerializeField] private float _range;
     [SerializeField] private int _damage;
+
+    [SerializeField] private float _cooldown;
+    private float _currentCooldown;
+    private bool _isReadyFire { get { return _currentCooldown >= _cooldown; } }
     
     private bool _isPressedFire => Input.GetKey(_firekey);
+
+    private void Awake() => CacheComponents();
+
+    private void Update() => UpdateCurrentCooldown();
+
+    private void UpdateCurrentCooldown()
+    {
+        if (_isReadyFire) return;
+
+        _currentCooldown += Time.deltaTime;
+    }
 
     public void Fire()
     {
         if (!_isPressedFire) return;
+
+        if (!_isReadyFire) return;
 
         // Raycast -> IDamageable
         IDamageable damageable = GetDamageable();
@@ -23,9 +40,11 @@ public class PlayerWeapon : MonoBehaviour
         if (damageable == null) return;
 
         damageable.TakeDamage(_damage);
-        Debug.Log($"Player : {damageable.gameObject.name}");
+        Debug.Log($"Player : {damageable.GameObject.name}");
 
         // IDamagealbe.TakeDamage
+
+        _currentCooldown = 0f;
     }
 
     private IDamageable GetDamageable()
@@ -41,5 +60,10 @@ public class PlayerWeapon : MonoBehaviour
         }
 
         return damageable;
+    }
+
+    private void CacheComponents()
+    {
+        _cameraTransform = Camera.main.transform;
     }
 }

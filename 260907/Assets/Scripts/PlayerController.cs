@@ -13,7 +13,11 @@ public class PlayerController : MonoBehaviour
     private void Awake() => CacheComponents();
     private void Start() => LockCursor();
     private void FixedUpdate() => _movement.Move();
-    private void Update() => _movement.Rotate();
+    private void Update()
+    {
+        _movement.Rotate();
+        _weapon.Fire();
+    }
     private void LateUpdate()
     {
         SetCameraTransform();
