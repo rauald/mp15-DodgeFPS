@@ -6,6 +6,10 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed;
+    private bool _isAddSpeed = false;
+    private float _AddMoveSpeed;
+    private float _itemDuration;
+    private float _curItemDuration;
     [SerializeField] private Transform _cameraPivot;
     [SerializeField] private float _mouseSensitivity;
     [SerializeField] private float _minPitch;
@@ -16,6 +20,20 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody _rigidbody;
 
     private void Awake() => CacheComponents();
+
+    private void Start() => Init();
+
+    private void Update()
+    {
+        UpdateAddSpeedDuration();
+    }
+
+    private void Init()
+    {
+        _isAddSpeed = false;
+        _AddMoveSpeed = 1;
+        _curItemDuration = 0;
+    }
 
     public void Rotate()
     {
@@ -32,6 +50,32 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    public void AddSpeed(float duration, float value)
+    {
+        if (!_isAddSpeed)
+        {
+            _isAddSpeed = true;
+            _itemDuration = duration;
+            _AddMoveSpeed = value;
+            Debug.Log($"이동 속도 {_AddMoveSpeed}배 상승!");
+        }
+    }
+
+    private void UpdateAddSpeedDuration()
+    {
+        if(_isAddSpeed)
+        {
+            _curItemDuration += Time.deltaTime;
+            if(_curItemDuration > _itemDuration)
+            {
+                _isAddSpeed = false;
+                _AddMoveSpeed = 1;
+                _curItemDuration = 0;
+                Debug.Log($"이동 속도 아이템 효과가 끝났습니다.");
+            }
+        }
+    }
+
     public void Move()
     {
         // 입력 받아서 방향 구하기
@@ -40,7 +84,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 direction = transform.right * input.x + transform.forward * input.z;
 
         // ↓ 절대값 좌표
-        Vector3 newVelocity = new Vector3(direction.x * _moveSpeed, _rigidbody.velocity.y, direction.z * _moveSpeed);
+        Vector3 newVelocity = new Vector3(direction.x * (_moveSpeed * _AddMoveSpeed), _rigidbody.velocity.y, direction.z * (_moveSpeed * _AddMoveSpeed));
 
         // _rigidbody.velocity 에 적용
         _rigidbody.velocity = newVelocity;
