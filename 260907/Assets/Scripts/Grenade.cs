@@ -11,6 +11,7 @@ public class Grenade : MonoBehaviour
     private Transform _startTr;
 
     [SerializeField] private float _boomTime;
+    [SerializeField] private GameObject _boomEffect;
 
     private Rigidbody _rigidbody;
 
@@ -36,5 +37,10 @@ public class Grenade : MonoBehaviour
         _rigidbody.AddForce(_startTr.forward * _power + Vector3.up * _power, ForceMode.Impulse);
 
         Destroy(gameObject, _boomTime);
+    }
+
+    public void OnDestroy()
+    {
+        Instantiate(_boomEffect, transform.position, Quaternion.identity);
     }
 }

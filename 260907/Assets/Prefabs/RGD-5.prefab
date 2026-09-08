@@ -128,6 +128,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _power: 0.01
   _boomTime: 3
+  _boomEffect: {fileID: 7323413418430785179, guid: db4edf8582e84c041ab4c01d1599e39c, type: 3}
 --- !u!136 &6124391469795927154
 CapsuleCollider:
   m_ObjectHideFlags: 0
