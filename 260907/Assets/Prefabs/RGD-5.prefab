@@ -127,6 +127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _power: 0.01
+  _boomTime: 3
 --- !u!136 &6124391469795927154
 CapsuleCollider:
   m_ObjectHideFlags: 0

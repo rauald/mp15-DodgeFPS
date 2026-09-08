@@ -10,6 +10,8 @@ public class Grenade : MonoBehaviour
     [SerializeField] private float _power;
     private Transform _startTr;
 
+    [SerializeField] private float _boomTime;
+
     private Rigidbody _rigidbody;
 
     private void Awake() => CacheComponents();
@@ -33,5 +35,6 @@ public class Grenade : MonoBehaviour
         _power = power;
         _rigidbody.AddForce(_startTr.forward * _power + Vector3.up * _power, ForceMode.Impulse);
 
+        Destroy(gameObject, _boomTime);
     }
 }
