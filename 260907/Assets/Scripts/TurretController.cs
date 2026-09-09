@@ -2,8 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TurretController : MonoBehaviour
+public class TurretController : MonoBehaviour, IDamageable
 {
+    [SerializeField] private const int MAX_HP = 200;
+    [SerializeField] private int _curHp;
+    private bool _isDie { get { return _curHp <= 0; } }
+    [SerializeField] private GameObject _dieEff;
+
     [SerializeField] private float _rotateSpeed;
     [SerializeField] private float _cooldown;
     [SerializeField] private Transform _headTransform;
@@ -18,43 +23,81 @@ public class TurretController : MonoBehaviour
     private float _currentCooldown;
     private Transform _playerTransfom;
     private bool _isPlayerInTrigger => _playerTransfom != null;
-    private bool _isPlayerInSight = false;
+    private bool _isPlayerInMask => _playerTransfom != null;
+    [SerializeField] private bool _isPlayerInSight = false;
     private bool _isReadyToFire { get { return _currentCooldown >= _cooldown; } }
+
+    public GameObject GameObject { get => gameObject; }
+
     private SphereCollider _sphereCollider;
+
+    [SerializeField] private LayerMask _TargetMask;
+
+
+
+
     private void Awake() => CacheComponents();
+
+    private void Start()
+    {
+        _dieEff.SetActive(false);
+        _curHp = MAX_HP;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
+        /*
         if(other.CompareTag("Player"))
         {
             _playerTransfom = other.transform;
+        }*/
+
+        if(_TargetMask.Contains(other))
+        {
+            _playerTransfom = other.transform;
+            _isPlayerInSight = true;
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
+        /*
         if(other.CompareTag("Player"))
         {
             _playerTransfom = null;
+        }*/
+
+        if (_TargetMask.Contains(other))
+        {
+            _isPlayerInSight = false;
         }
     }
 
     private void Update()
     {
-        UpdateCurrentCooldown();
-        RayShotPlayer();
-        Rotate();
-        Fire();
+        if (_isDie)
+        {
+            UpdateDieAniamtion();
+        }
+        else
+        {
+            UpdateCurrentCooldown();
+            //RayShotPlayer();
+            Rotate();
+            Fire();
+        }
     }
 
     private void CacheComponents()
     {
-        _sphereCollider = GetComponent<SphereCollider>();
+        _sphereCollider = GetComponentInChildren<SphereCollider>();
     }
 
     private void Fire()
     {
-        if (!_isPlayerInSight || !_isPlayerInTrigger) return;
+        //if (!_isPlayerInSight || !_isPlayerInTrigger) return;
+        
+        if (!_isPlayerInSight || !_isPlayerInMask) return;
 
         Vector3 look = new Vector3(_playerTransfom.position.x, _headTransform.position.y, _playerTransfom.position.z);
         _headTransform.LookAt(_playerTransfom.position);
@@ -85,7 +128,7 @@ public class TurretController : MonoBehaviour
 
     private void Rotate()
     {
-        if (!_isPlayerInSight) return;
+        if (_isPlayerInSight) return;
 
         _headTransform.Rotate(Vector3.up, _rotateSpeed * Time.deltaTime);
     }
@@ -118,16 +161,40 @@ public class TurretController : MonoBehaviour
             _isPlayerInSight = false;
         }
     }
-    private void OnDrawGizmos()
+
+    public void TakeDamage(int damage)
     {
-        if (_sphereCollider != null)
+        if (_isDie) return;
+
+        Debug.Log($"{gameObject.name} : 데미지 입었다. - {damage}");
+
+        _curHp -= damage;
+        Debug.Log($"현재 체력 : {_curHp}");
+
+        DieCheck();
+    }
+
+    private void DieCheck()
+    {
+        if (_isDie)
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawRay(
-                new Vector3(transform.position.x,
-                transform.position.y + _muzzlePoint.position.y / 2,
-                transform.position.z),
-                transform.forward * _sphereCollider.radius);
+            _dieEff.SetActive(true);
+        }
+    }
+
+    private void UpdateDieAniamtion()
+    {
+        if (_headTransform.eulerAngles.x < 28f)
+        {
+            _headTransform.Rotate(Vector3.right, _rotateSpeed * Time.deltaTime);
+        }
+        else if (_headTransform.eulerAngles.x > 32f)
+        {
+            _headTransform.Rotate(Vector3.left, _rotateSpeed * Time.deltaTime);
+        }
+        else
+        {
+            _headTransform.localEulerAngles = new Vector3(30f, _headTransform.localEulerAngles.y, _headTransform.localEulerAngles.z);
         }
     }
 }

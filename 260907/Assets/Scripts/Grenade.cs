@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using TreeEditor;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Grenade : MonoBehaviour
 {
-    private int _damage;
+    [SerializeField] private int _damage;
 
     [SerializeField] private float _power;
     private Transform _startTr;
@@ -14,6 +15,8 @@ public class Grenade : MonoBehaviour
     [SerializeField] private GameObject _boomEffect;
 
     private Rigidbody _rigidbody;
+
+    [SerializeField] private LayerMask _targetDamageMask;
 
     private void Awake() => CacheComponents();
 
@@ -42,5 +45,15 @@ public class Grenade : MonoBehaviour
     public void OnDestroy()
     {
         Instantiate(_boomEffect, transform.position, Quaternion.identity);
+
+        Collider[] col = Physics.OverlapSphere(transform.position, 3f, _targetDamageMask);
+
+        for(int i = 0; i < col.Length; i++)
+        {
+            if (col[i].TryGetComponent(out IDamageable damageable))
+            {
+                damageable.TakeDamage(_damage);
+            }
+        }
     }
 }

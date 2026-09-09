@@ -674,6 +674,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 813747805803115971, guid: 0ef4453d56ed9d948862416b46e06776, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2252275543376378391, guid: 0ef4453d56ed9d948862416b46e06776, type: 3}
       propertyPath: m_LocalPosition.x
       value: -8.931417
@@ -1286,6 +1290,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 6361232585350969339, guid: f51191b05feb8304d8e9de46bb01188f, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 6464355027817281457, guid: f51191b05feb8304d8e9de46bb01188f, type: 3}
       propertyPath: _grenade
       value: 
@@ -1306,6 +1314,10 @@ PrefabInstance:
       propertyPath: _grenadePerfab
       value: 
       objectReference: {fileID: 1089419350033701884, guid: 08c227cc30b6abe48a004ded35d9c7ee, type: 3}
+    - target: {fileID: 6464355027817281457, guid: f51191b05feb8304d8e9de46bb01188f, type: 3}
+      propertyPath: _targetMask.m_Bits
+      value: 951
+      objectReference: {fileID: 0}
     - target: {fileID: 6464355027817281457, guid: f51191b05feb8304d8e9de46bb01188f, type: 3}
       propertyPath: _bulletImpactEffectPrafab
       value: 

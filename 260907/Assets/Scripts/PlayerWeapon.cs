@@ -48,6 +48,10 @@ public class PlayerWeapon : MonoBehaviour
     [SerializeField] private FlameEffect _flameEffect;
     [SerializeField] private FlameEffect _bulletImpactEffectPrafab;
 
+
+    [SerializeField] private LayerMask _targetMask;
+
+
     private void Awake() => CacheComponents();
 
     private void Start() => Init();
@@ -140,7 +144,7 @@ public class PlayerWeapon : MonoBehaviour
         RaycastHit hit;
 
 
-        if(Physics.Raycast(ray, out hit, _range))
+        if(Physics.Raycast(ray, out hit, _range, _targetMask)) //, QueryTriggerInteraction.Ignore))
         {
             PlayBulletImpactEffect(hit);
             result = hit.transform.TryGetComponent(out damageable);
@@ -202,14 +206,6 @@ public class PlayerWeapon : MonoBehaviour
             if( _throwPower >= MAX_THROW_POWER)
             {
                 _throwPower = MAX_THROW_POWER;
-            }
-            else
-            {
-                if((int)_throwPower % 1 == 0)
-                {
-                    int temp = (int)(_throwPower / 1);
-                    Debug.Log($"힘 {temp}단계!");
-                }
             }
         }
 

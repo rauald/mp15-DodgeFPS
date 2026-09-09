@@ -126,9 +126,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ccf75d442f910d47964881da10d769c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _damage: 30
   _power: 0.01
   _boomTime: 3
   _boomEffect: {fileID: 7323413418430785179, guid: db4edf8582e84c041ab4c01d1599e39c, type: 3}
+  _targetDamageMask:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!136 &6124391469795927154
 CapsuleCollider:
   m_ObjectHideFlags: 0

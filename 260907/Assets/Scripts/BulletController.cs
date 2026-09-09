@@ -7,15 +7,23 @@ public class BulletController : MonoBehaviour
     private int _damage;
     private float _speed;
 
+    public LayerMask _targetLayer;
+
     // 어딘가에 부딪히면
     private void OnTriggerEnter(Collider other)
     {
-        if(other.CompareTag("Player"))
+        int layer = (1 << other.gameObject.layer);
+
+        //if (ContainsLayer(TargetLayer, other))
+        if (_targetLayer.Contains(other))
         {
-            // TODO : 데미지 추가
-            Debug.Log("플레이어 맞음");
+            if(other.TryGetComponent(out IDamageable damageable))
+            {
+                damageable.TakeDamage(_damage);
+                Debug.Log("플레이어 맞음");
+            }
+            Destroy(gameObject);
         }
-        Destroy(gameObject);
     }
 
     // 플레이어인 경우 데미지 주기

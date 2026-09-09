@@ -54,7 +54,7 @@ public class ItemBox : MonoBehaviour, IInteractable
 
     private void ItemEffect(PlayerController player)
     {
-        GameObject boom = Instantiate(_itemEffect[(int)itemType], transform.position, Quaternion.identity);
+        GameObject effectObj = Instantiate(_itemEffect[(int)itemType], transform.position, Quaternion.identity);
 
         switch (itemType)
         {
@@ -70,7 +70,18 @@ public class ItemBox : MonoBehaviour, IInteractable
                 player.ShootingSpeedUp(_item._duration, _item._value);
                 break;
             case ItemType.Boom:
-                player.ItemBoxBoom((int)_item._value, boom.transform);
+                //player.ItemBoxBoom((int)_item._value, boom.transform);
+
+                Collider[] colliders = Physics.OverlapSphere(transform.position, 3f);
+
+                foreach(Collider col in colliders)
+                {
+                    if(col.TryGetComponent(out IDamageable damageable))
+                    {
+                        damageable.TakeDamage((int)_item._value);
+                    }
+                }
+
                 break;
             case ItemType.Max:
                 break;

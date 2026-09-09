@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour, IInteractor
+public class PlayerController : MonoBehaviour, IInteractor, IDamageable
 {
     [SerializeField] private Transform _cameraPivot;
     [SerializeField] private float _detectionRange;
@@ -88,6 +88,7 @@ public class PlayerController : MonoBehaviour, IInteractor
 
         if (!Physics.Raycast(ray, out hit, _detectionRange))
         {
+
             if (_hasDetectInteractable)
             {
                 _targetInteractable.Untargeting();
@@ -152,15 +153,27 @@ public class PlayerController : MonoBehaviour, IInteractor
 
         if (distance < 3)
         {
-            _curHp -= value;
-            Debug.Log($"현재 체력 : {_curHp}");
+            TakeDamage(value);
+        }
+    }
 
-            if (_curHp <= 0)
-            {
-                //  죽음
-                playerCol.enabled = false;
-                Debug.Log("죽었습니다.");
-            }
+    public void TakeDamage(int damage)
+    {
+        Debug.Log($"{gameObject.name} : 데미지 입었다. - {damage}");
+
+        _curHp -= damage;
+        Debug.Log($"현재 체력 : {_curHp}");
+
+        DieCheck();
+    }
+
+    private void DieCheck()
+    {
+        if (_curHp <= 0)
+        {
+            //  죽음
+            playerCol.enabled = false;
+            Debug.Log("죽었습니다.");
         }
     }
 }
