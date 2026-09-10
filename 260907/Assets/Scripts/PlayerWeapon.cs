@@ -13,7 +13,10 @@ public class PlayerWeapon : MonoBehaviour
     [SerializeField] private int _damage;
 
 
-    [SerializeField] private KeyCode _grenadeKey = KeyCode.E;
+    public int CurrentMagazine => _currentBulletCnt;
+    public int MaxMagazine => _mazine;
+
+    [SerializeField] private KeyCode _grenadeKey = KeyCode.R;
     private bool _isGrenadeReady;
     [SerializeField] private KeyCode _grenadePowerKey = KeyCode.Space;
     [SerializeField] private Transform _grenadeTr;

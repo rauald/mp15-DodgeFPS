@@ -30,7 +30,7 @@ public class PlayerController : MonoBehaviour, IInteractor, IDamageable
     private void Awake() => CacheComponents();
     private void Start()
     {
-        LockCursor();
+        //LockCursor();
         Init();
     }
     private void FixedUpdate() => _movement.Move();
