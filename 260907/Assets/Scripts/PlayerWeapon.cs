@@ -5,18 +5,21 @@ using UnityEngine;
 
 public class PlayerWeapon : MonoBehaviour
 {
+    private const int MAX_MAGEZINE_CNT = 30;
+    private const int MAX_GRENADE_CNT = 3;
+
     private Transform _cameraTransform;
 
     [SerializeField] private KeyCode _firekey = KeyCode.Mouse0;
 
     [SerializeField] private float _range;
     [SerializeField] private int _damage;
-
-
+    public int MaxMagazine => MAX_MAGEZINE_CNT;
     public int CurrentMagazine => _currentBulletCnt;
-    public int MaxMagazine => _mazine;
 
-    [SerializeField] private KeyCode _grenadeKey = KeyCode.R;
+
+    [SerializeField] private KeyCode _grenadeKey = KeyCode.Alpha3;
+    private int _curGrenadeCnt;
     private bool _isGrenadeReady;
     [SerializeField] private KeyCode _grenadePowerKey = KeyCode.Space;
     [SerializeField] private Transform _grenadeTr;
@@ -24,6 +27,11 @@ public class PlayerWeapon : MonoBehaviour
     [SerializeField] private Grenade _grenade;
     private const float MAX_THROW_POWER = 10f;
     private float _throwPower;
+    public int MaxGrenade => MAX_GRENADE_CNT;
+    public int CurrentGrenade => _curGrenadeCnt;
+
+
+
 
     private bool _isItemSpeed;
     private const float MAX_COOL_DOWN = 0.5f;
@@ -35,6 +43,8 @@ public class PlayerWeapon : MonoBehaviour
     private float _curItemDuration;
     private float _itemValue;
 
+    private PlayerUIController _playerUI;
+
     
     private bool _isPressedFire => Input.GetKey(_firekey);
 
@@ -43,7 +53,6 @@ public class PlayerWeapon : MonoBehaviour
     // 리로드 버튼(R) 눌러야 다시 30발 참
     // 리로드 할 수 있는 탄환은 무제한
 
-    [SerializeField] private int _mazine;
     private int _currentBulletCnt;
     private bool _isMagzine { get { return _currentBulletCnt > 0; } }
 
@@ -70,13 +79,19 @@ public class PlayerWeapon : MonoBehaviour
 
     private void Init()
     {
-        _currentBulletCnt = _mazine;
+        _currentBulletCnt = MAX_MAGEZINE_CNT;
         _cooldown = MAX_COOL_DOWN;
         _isItemSpeed = false;
         _curItemDuration = 0;
+        _curGrenadeCnt = MAX_GRENADE_CNT;
         _isGrenadeReady = false;
         _throwPower = 0;
         _grenadeObj.SetActive(false);
+    }
+
+    public void UICom(PlayerUIController playerUI)
+    {
+        _playerUI = playerUI;
     }
 
     private void UpdateCurrentCooldown()
@@ -103,6 +118,7 @@ public class PlayerWeapon : MonoBehaviour
         _currentCooldown = 0f;
         _currentBulletCnt--;
         Debug.Log($"총알이 {_currentBulletCnt}개 남았습니다.");
+        _playerUI.SetMagazineUI(this);
 
         // Raycast -> IDamageable
         if (!TryGetDamageable(out IDamageable damageable)) return;
@@ -130,11 +146,12 @@ public class PlayerWeapon : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.R))
         {
-            if (_currentBulletCnt == _mazine)
+            if (_currentBulletCnt == MAX_MAGEZINE_CNT)
                 Debug.Log("총알이 꽉 찼습니다.");
 
-            Debug.Log($"총알 {_mazine - _currentBulletCnt}개 재장전 완료.");
-            _currentBulletCnt = _mazine;
+            Debug.Log($"총알 {MAX_MAGEZINE_CNT - _currentBulletCnt}개 재장전 완료.");
+            _currentBulletCnt = MAX_MAGEZINE_CNT;
+            _playerUI.SetMagazineUI(this);
         }
     }
 
@@ -189,6 +206,8 @@ public class PlayerWeapon : MonoBehaviour
 
     private void SummonGrenade()
     {
+        if (_curGrenadeCnt <= 0) return;
+
         if (_isGrenadeReady) return;
 
         if (Input.GetKeyDown(_grenadeKey))
@@ -216,6 +235,8 @@ public class PlayerWeapon : MonoBehaviour
         {
             _isGrenadeReady = false;
             Instantiate(_grenade, _grenadeTr.position, _grenadeTr.rotation).Throw(_grenadeObj.transform, _throwPower);
+            _curGrenadeCnt--;
+            _playerUI.SetMagazineUI(this);
             _throwPower = 0;
             _grenadeObj.SetActive(false);
         }

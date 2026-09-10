@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour, IInteractor, IDamageable
 
     private PlayerWeapon _weapon;
     private PlayerMovement _movement;
+    private PlayerUIController _playerUI;
     private Transform _cameraTransform;
 
     private IInteractable _targetInteractable;
@@ -30,7 +31,7 @@ public class PlayerController : MonoBehaviour, IInteractor, IDamageable
     private void Awake() => CacheComponents();
     private void Start()
     {
-        //LockCursor();
+        LockCursor();
         Init();
     }
     private void FixedUpdate() => _movement.Move();
@@ -51,12 +52,15 @@ public class PlayerController : MonoBehaviour, IInteractor, IDamageable
     private void Init()
     {
         _curHp = MAX_HP;
+        _playerUI.SetUI(MAX_HP, _curHp);
     }
 
     private void CacheComponents()
     {
         _movement = GetComponent<PlayerMovement>();
         _weapon = GetComponentInChildren<PlayerWeapon>();
+        _playerUI = GetComponentInChildren<PlayerUIController>();
+        _weapon.UICom(_playerUI);
         playerCol = GetComponent<CapsuleCollider>();
         _cameraTransform = Camera.main.transform;
     }
@@ -163,6 +167,11 @@ public class PlayerController : MonoBehaviour, IInteractor, IDamageable
 
         _curHp -= damage;
         Debug.Log($"현재 체력 : {_curHp}");
+
+        if (_curHp <= 0)
+            _curHp = 0;
+
+        _playerUI.SetHpUI(_curHp);
 
         DieCheck();
     }

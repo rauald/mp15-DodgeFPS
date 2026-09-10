@@ -34,6 +34,10 @@ public class TurretController : MonoBehaviour, IDamageable
     [SerializeField] private LayerMask _TargetMask;
 
 
+    [SerializeField] private GameObject _hpUIParents;
+    [SerializeField] private GameObject _enemyHPUIObj;
+    private EnemyHPUI _enemyHPUI;
+
 
 
     private void Awake() => CacheComponents();
@@ -42,6 +46,14 @@ public class TurretController : MonoBehaviour, IDamageable
     {
         _dieEff.SetActive(false);
         _curHp = MAX_HP;
+        _enemyHPUI = Instantiate(_enemyHPUIObj, _hpUIParents.transform).GetComponent<EnemyHPUI>();
+        _enemyHPUI.SetUI(GameObject.transform, MAX_HP, _curHp);
+    }
+
+    public void SetTurret(GameObject parents, Transform tr)
+    {
+        _hpUIParents = parents;
+        transform.SetPositionAndRotation(tr.position, Quaternion.identity);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -170,6 +182,11 @@ public class TurretController : MonoBehaviour, IDamageable
 
         _curHp -= damage;
         Debug.Log($"현재 체력 : {_curHp}");
+
+        if(_curHp <= 0)
+            _curHp = 0;
+
+        _enemyHPUI.SetHpUI(_curHp);
 
         DieCheck();
     }

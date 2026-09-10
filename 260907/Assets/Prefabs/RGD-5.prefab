@@ -132,7 +132,7 @@ MonoBehaviour:
   _boomEffect: {fileID: 7323413418430785179, guid: db4edf8582e84c041ab4c01d1599e39c, type: 3}
   _targetDamageMask:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 384
 --- !u!136 &6124391469795927154
 CapsuleCollider:
   m_ObjectHideFlags: 0

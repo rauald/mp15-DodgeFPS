@@ -7,21 +7,40 @@ using TMPro;
 
 public class PlayerUIController : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI _magazine;
-    private PlayerWeapon _weapon;
+    private int _maxHp;
+    private int _curHp;
 
-    private void Awake() => CacheComponents();
-    private void Update() => RefreshMagazineUI();
+    private int _maxTurretCnt;
+    private int _curTurretCnt;
+    [SerializeField] private Image _img;
+    [SerializeField] private TextMeshProUGUI _txtCurHp;
+    [SerializeField] private TextMeshProUGUI _txtMagazine;
+    [SerializeField] private TextMeshProUGUI _txtGrenade;
+    [SerializeField] private TextMeshProUGUI _txtTurret;
 
 
-    private void CacheComponents()
+    public void SetUI(int maxHp, int curHp)
     {
-        _weapon = GetComponentInChildren<PlayerWeapon>();
+        _maxHp = maxHp;
+        SetHpUI(curHp);
     }
 
-
-    public void RefreshMagazineUI()
+    public void SetHpUI(int curHp)
     {
-        _magazine.text = $"{_weapon.CurrentMagazine} / {_weapon.MaxMagazine}";
+        _curHp = curHp;
+        _img.fillAmount = (float)_curHp / _maxHp;
+
+        _txtCurHp.text = $"{_curHp} / {_maxHp}";
+    }
+
+    public void SetMagazineUI(PlayerWeapon weapon)
+    {
+        _txtMagazine.text = $"{weapon.CurrentMagazine} / {weapon.MaxMagazine}";
+        _txtGrenade.text = $" {weapon.CurrentGrenade} / {weapon.MaxGrenade}";
+    }
+
+    public void SetTurretCntUI()
+    {
+        _txtTurret.text = $"{_curTurretCnt} / {_maxTurretCnt}";
     }
 }
