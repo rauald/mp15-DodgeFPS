@@ -15,12 +15,15 @@ public class Monster : MonoBehaviour, IDamageable
     [SerializeField] private List<Transform> _summonPointList = new();
     [SerializeField] private TurretController _turret;
 
+    private int _maxTurretCnt;
+    private int _curTurretCnt;
+
     public void SummonTurret()
     {
         int rand = Random.Range(1, _summonPointList.Count);
+        _maxTurretCnt = rand;
 
-
-        for(int i = 0; i < rand; i++)
+        for (int i = 0; i < rand; i++)
         {
             Instantiate(_turret, transform).SetTurret(_enemyHPCanvas, _summonPointList[i]);
         }
