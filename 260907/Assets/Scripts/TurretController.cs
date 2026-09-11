@@ -18,7 +18,7 @@ public class TurretController : MonoBehaviour, IDamageable
     [SerializeField] private BulletController _bulletPrefab;
     [SerializeField] private int _bulletDamage;
     [SerializeField] private float _bulletSpeed;
-    [SerializeField] private float _bulletDestroyDelay;
+    [SerializeField] private float _bulletReturnDelay;
 
     private float _currentCooldown;
     private Transform _playerTransfom;
@@ -38,6 +38,7 @@ public class TurretController : MonoBehaviour, IDamageable
     [SerializeField] private GameObject _enemyHPUIObj;
     private EnemyHPUI _enemyHPUI;
 
+    [SerializeField] private ObjectPool _pool;
 
 
     private void Awake() => CacheComponents();
@@ -50,8 +51,9 @@ public class TurretController : MonoBehaviour, IDamageable
         _enemyHPUI.SetUI(GameObject.transform, MAX_HP, _curHp);
     }
 
-    public void SetTurret(GameObject parents, Transform tr)
+    public void SetTurret(ObjectPool pool, GameObject parents, Transform tr)
     {
+        _pool = pool;
         _hpUIParents = parents;
         transform.SetPositionAndRotation(tr.position, Quaternion.identity);
     }
@@ -112,7 +114,7 @@ public class TurretController : MonoBehaviour, IDamageable
         if (!_isPlayerInSight || !_isPlayerInMask) return;
 
         Vector3 look = new Vector3(_playerTransfom.position.x, _headTransform.position.y, _playerTransfom.position.z);
-        _headTransform.LookAt(_playerTransfom.position);
+        _headTransform.LookAt(look);
 
         if (!_isReadyToFire) return;
 
@@ -129,13 +131,27 @@ public class TurretController : MonoBehaviour, IDamageable
         _currentCooldown += Time.deltaTime;
     }
 
+
     private void SpwanBullet()
     {
+        // 1. 얻어오기
+        IPoolable bullet = _pool.Take();
+
+        // 2. Transform.Position, rotation 설정
+        bullet.tr.position = _muzzlePoint.position;
+        bullet.tr.rotation = _muzzlePoint.rotation;
+
+        // 3. 활성화
+        bullet.tr.gameObject.SetActive(true);
+
+        (bullet as BulletController).SetData(_bulletDamage, _bulletSpeed, _bulletReturnDelay);
+
+
         // 프리팹
         // Instantiate 하면서 position, rotation 설정까지
-        BulletController bullet = Instantiate(_bulletPrefab, _muzzlePoint.position, _muzzlePoint.rotation);
+        //BulletController bullet = Instantiate(_bulletPrefab, _muzzlePoint.position, _muzzlePoint.rotation);
 
-        bullet.SetData(_bulletDamage, _bulletSpeed, _bulletDestroyDelay);
+        //bullet.SetData(_bulletDamage, _bulletSpeed, _bulletDestroyDelay);
     }
 
     private void Rotate()

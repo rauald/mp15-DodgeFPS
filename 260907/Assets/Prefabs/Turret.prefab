@@ -14718,13 +14718,14 @@ MonoBehaviour:
   _bulletPrefab: {fileID: 1054848668384558642, guid: 8348f6ffadbff614d91185805a6243f6, type: 3}
   _bulletDamage: 10
   _bulletSpeed: 4
-  _bulletDestroyDelay: 5
+  _bulletReturnDelay: 3
   _isPlayerInSight: 0
   _TargetMask:
     serializedVersion: 2
     m_Bits: 128
   _hpUIParents: {fileID: 0}
   _enemyHPUIObj: {fileID: 6398194617128374814, guid: 0063728d69395d44381651415b52dd3f, type: 3}
+  _pool: {fileID: 0}
 --- !u!54 &5396752944380438531
 Rigidbody:
   m_ObjectHideFlags: 0
