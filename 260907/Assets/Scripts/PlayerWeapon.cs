@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TreeEditor;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerWeapon : MonoBehaviour
@@ -71,7 +72,6 @@ public class PlayerWeapon : MonoBehaviour
     private void Update()
     {
         UpdateCurrentCooldown();
-        RefillBullet();
         UpdateShottingSpeedUp();
         SummonGrenade();
         ThorwGrenade();
@@ -113,6 +113,8 @@ public class PlayerWeapon : MonoBehaviour
             return;
         }
 
+        if (_isReload) return;
+
         PlayerFlameEffect();
 
         _currentCooldown = 0f;
@@ -142,16 +144,30 @@ public class PlayerWeapon : MonoBehaviour
         effectTransform.forward = hit.normal;
     }
 
-    private void RefillBullet()
+    [SerializeField] private float _reloadDelay;
+    private bool _isReload;
+
+    private IEnumerator ReloadRoutine()
     {
         if (Input.GetKeyDown(KeyCode.R))
         {
             if (_currentBulletCnt == MAX_MAGEZINE_CNT)
+            {
+                _isReload = false;
                 Debug.Log("총알이 꽉 찼습니다.");
+                yield return null;
+            }
+            else
+            {
+                _isReload = true;
 
-            Debug.Log($"총알 {MAX_MAGEZINE_CNT - _currentBulletCnt}개 재장전 완료.");
-            _currentBulletCnt = MAX_MAGEZINE_CNT;
-            _playerUI.SetMagazineUI(this);
+                yield return new WaitForSeconds(_reloadDelay);
+
+                Debug.Log($"총알 {MAX_MAGEZINE_CNT - _currentBulletCnt}개 재장전 완료.");
+                _currentBulletCnt = MAX_MAGEZINE_CNT;
+                _playerUI.SetMagazineUI(this);
+                _isReload = false;
+            }
         }
     }
 
